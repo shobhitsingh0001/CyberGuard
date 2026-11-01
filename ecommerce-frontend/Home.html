@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BharatStore - Shop Smart, Shop India</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="home.css" />
+</head>
+<body>
+
+  <!-- UTILITY BAR -->
+  <div class="utility-bar">
+    <span class="utility-left">Delivering to <strong>India</strong></span>
+    <div class="utility-right">
+      <a href="#" onclick="switchTab('orders', document.querySelectorAll('.nav-btn')[2]); return false;">Track Order</a>
+      <a href="#" onclick="switchTab('help', document.querySelectorAll('.nav-btn')[3]); return false;">Help Center</a>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header>
+    <a href="#" class="logo" onclick="resetAndGoHome()">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="17" cy="17" r="17" fill="#F2994A"/>
+        <path d="M10.5 13.5c0-3.2 2.6-5.5 6.5-5.5s6.5 2.3 6.5 5.5v8.2c0 1.8-1.3 2.8-2.8 2.8h-7.4c-1.5 0-2.8-1-2.8-2.8v-8.2z" fill="#1B1B3A"/>
+        <path d="M13.3 13.2c0-2.3 1.7-4.1 3.7-4.1s3.7 1.8 3.7 4.1" stroke="#FAF7F2" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-text">Bharat  <strong>Store</strong></span>
+    </a>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search for products, brands and more" oninput="handleSearch(this.value)" />
+      <button class="search-btn" aria-label="Search">🔍</button>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" onclick="resetAndGoHome(this)">Home</button>
+      <button class="nav-btn" onclick="switchTab('categories', this)">Categories</button>
+      <button class="nav-btn" onclick="switchTab('orders', this)">Orders</button>
+      <button class="nav-btn" onclick="switchTab('help', this)">Help</button>
+      <button class="nav-btn account-btn" id="accountBtn" onclick="handleAccountClick()">👤 <span id="accountLabel">Login</span></button>
+      <button class="nav-btn cart-btn" onclick="toggleCart()">
+        🛒 Cart <span class="cart-badge" id="cartCount">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- CART DRAWER / MODAL -->
+  <div id="cartModal" class="cart-modal">
+    <div class="cart-content">
+      <div class="cart-header">
+        <h2>Your Shopping Cart</h2>
+        <button class="close-btn" onclick="toggleCart()">&times;</button>
+      </div>
+      <div id="cartItemsContainer" class="cart-items">
+        <!-- Dynamic Cart Items Injected Here -->
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span id="cartTotal">₹0</span>
+        </div>
+        <button class="btn-checkout" onclick="checkout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- 1. HOME SECTION -->
+    <section id="home" class="section active">
+
+      <div class="hero">
+        <div class="hero-content">
+          <span class="hero-eyebrow">Festive Edit · Live Now</span>
+          <h1>Big Style,<br>Bigger Savings.</h1>
+          <p>Curated tech, fashion &amp; everyday essentials — up to 40% off, shipped across India.</p>
+          <button class="hero-cta" onclick="document.getElementById('productGrid').scrollIntoView({behavior:'smooth'})">Shop the Sale</button>
+        </div>
+        <div class="hero-pattern" aria-hidden="true"></div>
+      </div>
+
+      <div class="trust-bar">
+        <div class="trust-item"><span class="trust-icon">🚚</span><span>Free Delivery<small>above ₹499</small></span></div>
+        <div class="trust-item"><span class="trust-icon">↩️</span><span>Easy Returns<small>within 14 days</small></span></div>
+        <div class="trust-item"><span class="trust-icon">🔒</span><span>Secure Payments<small>100% protected</small></span></div>
+        <div class="trust-item"><span class="trust-icon">💵</span><span>Cash on Delivery<small>available</small></span></div>
+      </div>
+
+      <div class="grid-header">
+        <h2 class="section-title" id="gridTitle">Featured Products</h2>
+        <button id="resetFilterBtn" style="display:none;" onclick="resetAndGoHome()">Show All Products</button>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <!-- Products Injected via JS -->
+      </div>
+    </section>
+
+    <!-- 2. CATEGORIES SECTION -->
+    <section id="categories" class="section">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="category-grid" id="categoryGrid">
+        <!-- Category cards injected via JS -->
+      </div>
+    </section>
+
+    <!-- 3. ORDERS SECTION -->
+    <section id="orders" class="section">
+      <h2 class="section-title">Your Orders</h2>
+      <div id="ordersList">
+        <!-- Orders Injected via JS -->
+      </div>
+    </section>
+
+    <!-- 4. HELP SECTION -->
+    <section id="help" class="section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What is the estimated delivery time?</h3>
+        <p>Standard delivery takes 2 to 4 business days across India.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How do returns work?</h3>
+        <p>You can request a full return within 14 days of receiving your item.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do you offer Cash on Delivery?</h3>
+        <p>Yes, COD is available on most pin codes across India.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-brand">
+        <div class="footer-logo">Bharat<strong>store</strong></div>
+        <p>Everyday products, honest prices, shipped across India.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#" onclick="switchTab('categories', document.querySelectorAll('.nav-btn')[1]); return false;">Categories</a></li>
+          <li><a href="#" onclick="resetAndGoHome(); return false;">Featured</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <ul>
+          <li><a href="#" onclick="switchTab('orders', document.querySelectorAll('.nav-btn')[2]); return false;">Track Order</a></li>
+          <li><a href="#" onclick="switchTab('help', document.querySelectorAll('.nav-btn')[3]); return false;">FAQs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 BharatStore Inc. Dynamic E-Commerce Project.</p>
+      <span class="payment-tags">UPI · Cards · Netbanking · COD</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

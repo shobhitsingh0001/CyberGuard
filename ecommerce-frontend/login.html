@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in – BharatStore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="Home.html">Bharat<span>Store</span></a>
+  </header>
+
+  <main>
+    <div class="auth-card">
+      <section class="side" aria-hidden="false">
+        <div class="side-copy">
+          <h1>Welcome back.<br>Your orders are waiting.</h1>
+          <p>Sign in to track orders, reorder favourites and check out faster.</p>
+          <ul>
+            <li>Track every order in one place</li>
+            <li>Checkout with your saved details</li>
+            <li>Your cart stays with you across devices</li>
+          </ul>
+        </div>
+        <svg class="arcs" viewBox="0 0 200 200" fill="none" stroke="#f2a900" stroke-width="2" aria-hidden="true">
+          <circle cx="100" cy="100" r="30"/><circle cx="100" cy="100" r="50"/>
+          <circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="90"/>
+        </svg>
+      </section>
+
+      <section class="form-wrap">
+        <h2>Sign in</h2>
+        <p class="sub">Use your email or mobile number.</p>
+
+        <div id="banner" class="banner" role="alert"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="field" id="f-id">
+            <label for="identifier">Email or mobile number</label>
+            <input type="text" id="identifier" name="identifier" autocomplete="username" required>
+            <div class="err">Enter your email or 10-digit mobile number.</div>
+          </div>
+
+          <div class="field" id="f-pw">
+            <label for="password">Password</label>
+            <div class="input-row has-toggle">
+              <input type="password" id="password" name="password" autocomplete="current-password" required>
+              <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">Show</button>
+            </div>
+            <div class="err">Enter your password.</div>
+          </div>
+
+          <button class="btn" id="submitBtn" type="submit">Sign in</button>
+        </form>
+
+        <div class="switch">
+          New to BharatStore? <a href="signup.html">Create your account</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>© BharatStore</footer>
+
+  <script>
+    // Backend ka address — BharatStore ka apna backend, ecommerce-backend/main.py isi port pe chalega.
+    // (CyberGuard alag project hai, wo apne port 9000 pe chalta hai — dono clash nahi karenge)
+    const API = "http://127.0.0.1:8000";
+
+    const $ = (id) => document.getElementById(id);
+    const banner = $("banner");
+    const btn = $("submitBtn");
+
+    function showBanner(msg, type) {
+      banner.textContent = msg;
+      banner.className = "banner show " + type;
+    }
+    function clearBanner() { banner.className = "banner"; }
+
+    $("togglePw").addEventListener("click", () => {
+      const pw = $("password");
+      const show = pw.type === "password";
+      pw.type = show ? "text" : "password";
+      $("togglePw").textContent = show ? "Hide" : "Show";
+      $("togglePw").setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+
+    // Already signed in? Seedha Home pe bhej do.
+    if (localStorage.getItem("bharat_token")) {
+      window.location.replace("Home.html");
+    }
+
+    $("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearBanner();
+
+      const identifier = $("identifier").value.trim();
+      const password = $("password").value;
+
+      $("f-id").classList.toggle("invalid", !identifier);
+      $("f-pw").classList.toggle("invalid", !password);
+      if (!identifier || !password) return;
+
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+
+      try {
+        const res = await fetch(API + "/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email_or_mobile: identifier, password })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          showBanner(
+            typeof data.detail === "string" ? data.detail : "Could not sign in. Check your details and try again.",
+            "error"
+          );
+          return;
+        }
+
+        localStorage.setItem("bharat_token", data.access_token);
+        localStorage.setItem("bharat_user", JSON.stringify(data.user));
+        showBanner("Signed in. Taking you to the store…", "success");
+        window.location.href = "Home.html";
+      } catch (err) {
+        showBanner("Can't reach the server. Make sure the BharatStore backend is running.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+      }
+    });
+  </script>
+</body>
+</html>

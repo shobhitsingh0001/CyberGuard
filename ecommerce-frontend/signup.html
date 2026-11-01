@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account – BharatStore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="Home.html">Bharat<span>Store</span></a>
+  </header>
+
+  <main>
+    <div class="auth-card">
+      <section class="side">
+        <div class="side-copy">
+          <h1>Looks like you're new here.</h1>
+          <p>Create an account in under a minute and start shopping.</p>
+          <ul>
+            <li>Products from ten categories, delivered across India</li>
+            <li>Order history and status updates</li>
+            <li>Faster checkout every time</li>
+          </ul>
+        </div>
+        <svg class="arcs" viewBox="0 0 200 200" fill="none" stroke="#f2a900" stroke-width="2" aria-hidden="true">
+          <circle cx="100" cy="100" r="30"/><circle cx="100" cy="100" r="50"/>
+          <circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="90"/>
+        </svg>
+      </section>
+
+      <section class="form-wrap">
+        <h2>Create account</h2>
+        <p class="sub">Tell us a little about you.</p>
+
+        <div id="banner" class="banner" role="alert"></div>
+
+        <form id="signupForm" novalidate>
+          <div class="field" id="f-name">
+            <label for="full_name">Full name</label>
+            <input type="text" id="full_name" autocomplete="name" required>
+            <div class="err">Enter your full name.</div>
+          </div>
+
+          <div class="field" id="f-mobile">
+            <label for="mobile">Mobile number</label>
+            <div class="input-row has-prefix">
+              <span class="mobile-prefix">+91</span>
+              <input type="tel" id="mobile" inputmode="numeric" maxlength="10" autocomplete="tel-national" required>
+            </div>
+            <div class="err">Enter a valid 10-digit mobile number.</div>
+          </div>
+
+          <div class="field" id="f-email">
+            <label for="email">Email</label>
+            <input type="email" id="email" autocomplete="email" required>
+            <div class="err">Enter a valid email address.</div>
+          </div>
+
+          <div class="field" id="f-pw">
+            <label for="password">Password</label>
+            <div class="input-row has-toggle">
+              <input type="password" id="password" autocomplete="new-password" required>
+              <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">Show</button>
+            </div>
+            <div class="meter" id="meter" data-level="0"><i></i><i></i><i></i><i></i></div>
+            <div class="hint" id="pwHint">At least 8 characters, with letters and numbers.</div>
+            <div class="err">Password must be at least 8 characters and include a letter and a number.</div>
+          </div>
+
+          <div class="field" id="f-pw2">
+            <label for="password2">Confirm password</label>
+            <input type="password" id="password2" autocomplete="new-password" required>
+            <div class="err">Passwords don't match.</div>
+          </div>
+
+          <label class="check" id="f-terms">
+            <input type="checkbox" id="terms">
+            <span>I agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.</span>
+          </label>
+
+          <button class="btn" id="submitBtn" type="submit">Create account</button>
+        </form>
+
+        <div class="switch">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>© BharatStore</footer>
+
+  <script>
+    // Backend ka address — login.html me bhi same rakhna.
+    const API = "http://127.0.0.1:8000";
+
+    const $ = (id) => document.getElementById(id);
+    const banner = $("banner");
+    const btn = $("submitBtn");
+
+    function showBanner(msg, type) {
+      banner.textContent = msg;
+      banner.className = "banner show " + type;
+      banner.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    if (localStorage.getItem("bharat_token")) {
+      window.location.replace("Home.html");
+    }
+
+    $("mobile").addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    });
+
+    $("togglePw").addEventListener("click", () => {
+      const pw = $("password");
+      const show = pw.type === "password";
+      pw.type = show ? "text" : "password";
+      $("togglePw").textContent = show ? "Hide" : "Show";
+      $("togglePw").setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+
+    function strength(pw) {
+      let s = 0;
+      if (pw.length >= 8) s++;
+      if (/[a-zA-Z]/.test(pw) && /\d/.test(pw)) s++;
+      if (pw.length >= 12) s++;
+      if (/[^a-zA-Z0-9]/.test(pw)) s++;
+      return pw ? Math.max(s, 1) : 0;
+    }
+    $("password").addEventListener("input", (e) => {
+      $("meter").dataset.level = strength(e.target.value);
+    });
+
+    const validators = {
+      "f-name":   () => $("full_name").value.trim().length >= 2,
+      "f-mobile": () => /^[6-9]\d{9}$/.test($("mobile").value),
+      "f-email":  () => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($("email").value.trim()),
+      "f-pw":     () => { const p = $("password").value; return p.length >= 8 && /[a-zA-Z]/.test(p) && /\d/.test(p); },
+      "f-pw2":    () => $("password2").value === $("password").value && $("password2").value !== ""
+    };
+
+    $("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      banner.className = "banner";
+
+      let ok = true;
+      for (const [id, check] of Object.entries(validators)) {
+        const valid = check();
+        $(id).classList.toggle("invalid", !valid);
+        if (!valid) ok = false;
+      }
+      if (!$("terms").checked) {
+        showBanner("Please accept the Terms of Use and Privacy Policy to continue.", "error");
+        return;
+      }
+      if (!ok) return;
+
+      btn.disabled = true;
+      btn.textContent = "Creating account…";
+
+      try {
+        const res = await fetch(API + "/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: $("full_name").value.trim(),
+            email: $("email").value.trim().toLowerCase(),
+            mobile_number: $("mobile").value,
+            password: $("password").value
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          let msg = "Could not create your account. Please try again.";
+          if (typeof data.detail === "string") msg = data.detail;
+          else if (Array.isArray(data.detail) && data.detail[0]?.msg) {
+            msg = data.detail[0].msg.replace(/^Value error, /, "");
+          }
+          showBanner(msg, "error");
+          return;
+        }
+
+        localStorage.setItem("bharat_token", data.access_token);
+        localStorage.setItem("bharat_user", JSON.stringify(data.user));
+        showBanner("Account created. Taking you to the store…", "success");
+        window.location.href = "Home.html";
+      } catch (err) {
+        showBanner("Can't reach the server. Make sure the BharatStore backend is running.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Create account";
+      }
+    });
+  </script>
+</body>
+</html>

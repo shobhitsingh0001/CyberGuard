@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CyberGuard - Risk Dashboard</title>
+  <style>
+    :root {
+      --ink: #12141C;
+      --muted: #6B7280;
+      --bg: #F5F6FA;
+      --card: #ffffff;
+      --border: #E5E7EB;
+      --low: #1B8A5A;
+      --low-bg: #E7F5EE;
+      --medium: #B8860B;
+      --medium-bg: #FFF6E0;
+      --high: #E23744;
+      --high-bg: #FDECEE;
+      --accent: #2874F0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); padding: 2rem; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+    .refresh-btn { background: var(--accent); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; }
+    .stat-card .label { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+    .stat-card.high .value { color: var(--high); }
+    .stat-card.medium .value { color: var(--medium); }
+    .stat-card.low .value { color: var(--low); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    th, td { text-align: left; padding: 0.7rem 0.9rem; font-size: 0.82rem; border-bottom: 1px solid var(--border); }
+    th { background: #FAFAFB; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.4px; }
+    tr:last-child td { border-bottom: none; }
+    .badge { padding: 3px 9px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; }
+    .badge.High { background: var(--high-bg); color: var(--high); }
+    .badge.Medium { background: var(--medium-bg); color: var(--medium); }
+    .badge.Low { background: var(--low-bg); color: var(--low); }
+    .empty { text-align: center; color: var(--muted); padding: 2rem; }
+    .reasons { color: var(--muted); font-size: 0.78rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>CyberGuard</h1>
+      <div class="subtitle">Live request risk monitoring for connected apps</div>
+    </div>
+    <button class="refresh-btn" onclick="loadDashboard()">Refresh</button>
+  </header>
+
+  <div class="stat-grid" id="statGrid">
+    <!-- injected via JS -->
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>IP</th>
+          <th>Method</th>
+          <th>Path</th>
+          <th>Risk</th>
+          <th>Score</th>
+          <th>Reasons</th>
+        </tr>
+      </thead>
+      <tbody id="logsBody">
+        <!-- injected via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

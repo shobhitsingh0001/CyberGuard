@@ -1,4 +1,4 @@
-# BharatStore + CyberGuard — Full Project
+# BharatStore + CyberGuard — Full Project. it is college project
 
 Do alag services hain, dono alag ports pe chalengi:
 
